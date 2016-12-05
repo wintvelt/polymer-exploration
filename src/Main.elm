@@ -2,10 +2,7 @@ module Main exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (div, text)
-import Html.Attributes exposing (class, disabled, style)
-import Html.Events exposing (onClick)
-import Polymer.Paper as Paper
-import Polymer.Attributes exposing (label, selected)
+import Dropdown exposing (dropdown)
 
 
 --import Polymer.Events exposing (onIronSelect, onSelectedChanged, onTap, onValueChanged)
@@ -98,40 +95,16 @@ update msg model =
 -- VIEW
 
 
-listItem : (String -> msg) -> String -> Html.Html msg
-listItem toMsg label =
-    Paper.item [ onClick (toMsg label) ] [ text label ]
-
-
-listboxWithMaybe : (String -> msg) -> Maybe String -> List String -> Html.Html msg
-listboxWithMaybe toMsg selectedItem list =
-    let
-        selectedIdx =
-            case selectedItem of
-                Nothing ->
-                    "-1"
-
-                Just val ->
-                    List.indexedMap (,) list
-                        |> List.foldr
-                            (\( idx, elem ) acc ->
-                                if elem == val then
-                                    idx
-                                else
-                                    acc
-                            )
-                            -1
-                        |> toString
-    in
-        Paper.listbox [ class "dropdown-content", selected selectedIdx ]
-            (List.map (listItem toMsg) list)
-
-
 view : Model -> Html.Html Msg
 view model =
     let
-        countryDropdown =
-            Paper.dropdownMenu [ label "Country", style [ ( "margin", "8px" ) ] ] [ listboxWithMaybe CountryPicked model.country countries ]
+        countryCfg =
+            { label = "Country"
+            , toMsg = CountryPicked
+            , selected = model.country
+            , items = countries
+            , disabled = False
+            }
 
         ( isCityDisabled, cities ) =
             case model.country of
@@ -141,8 +114,13 @@ view model =
                 Just country ->
                     ( False, citiesForCountry country )
 
-        cityDropdown =
-            Paper.dropdownMenu [ label "City", disabled isCityDisabled, style [ ( "margin", "8px" ) ] ] [ listboxWithMaybe CityPicked model.city cities ]
+        cityCfg =
+            { label = "City"
+            , toMsg = CityPicked
+            , selected = model.city
+            , items = cities
+            , disabled = isCityDisabled
+            }
     in
         div []
-            [ countryDropdown, cityDropdown ]
+            [ dropdown countryCfg, dropdown cityCfg ]
