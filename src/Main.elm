@@ -87,14 +87,10 @@ update msg model =
             { model
                 | country = Just country
                 , city =
-                    model.country
-                        |> Maybe.andThen
-                            (\currentCountry ->
-                                if currentCountry == country then
-                                    model.city
-                                else
-                                    Nothing
-                            )
+                    if model.country == (Just country) then
+                        model.city
+                    else
+                        Nothing
             }
 
         CityPicked city ->
