@@ -107,7 +107,7 @@ listItem label =
 
 
 listboxWithMaybe : (String -> msg) -> Maybe String -> List String -> Html.Html msg
-listboxWithMaybe msg selectedItem list =
+listboxWithMaybe toMsg selectedItem list =
     let
         selectedIdx =
             case selectedItem of
@@ -126,7 +126,7 @@ listboxWithMaybe msg selectedItem list =
                             -1
                         |> toString
     in
-        Paper.listbox [ class "dropdown-content", selected selectedIdx, onIronSelect msg ]
+        Paper.listbox [ class "dropdown-content", selected selectedIdx, onIronSelect toMsg ]
             (List.map listItem list)
 
 
