@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Elm • Polymer</title>
+
+        <!-- Chrome does not need the following polyfill, but when I try a conditional load per
+             https://www.polymer-project.org/1.0/docs/browsers and then vulcanize this file,
+             the result does not work in Firefox. So load it unconditionally. -->
+        <script type="text/javascript" src="assets/webcomponents-lite.min.js"></script>
+        <script type="text/javascript" src="assets/elm.js"></script>
+
+        <!-- Load the polymer components -->
+        <link rel="import" href="assets/elements.html">
+    </head>
+    <body>
+        <script type="text/javascript">
+         var app = Elm.Main.fullscreen();
+        </script>
+    </body>
+</html>
