@@ -8,6 +8,12 @@
              https://www.polymer-project.org/1.0/docs/browsers and then vulcanize this file,
              the result does not work in Firefox. So load it unconditionally. -->
         <script type="text/javascript" src="assets/webcomponents-lite.min.js"></script>
+        <script>
+            window.Polymer = {
+                dom: 'shadow',
+                lazyRegister: true
+            };
+        </script> 
         <script type="text/javascript" src="assets/elm.js"></script>
 
         <!-- Load the polymer components -->
