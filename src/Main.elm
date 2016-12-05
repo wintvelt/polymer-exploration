@@ -81,6 +81,7 @@ countries =
 type Msg
     = CountryPicked Country
     | CityPicked City
+    | Dbg String
 
 
 update : Msg -> Model -> Model
@@ -92,6 +93,9 @@ update msg model =
         CityPicked city ->
             { model | city = Just city }
 
+        Dbg str ->
+            Debug.log str model
+
 
 
 -- VIEW
@@ -102,8 +106,8 @@ listItem label =
     Paper.item [] [ text label ]
 
 
-listboxWithMaybe : Maybe a -> List String -> Html.Html msg
-listboxWithMaybe selectedItem list =
+listboxWithMaybe : (String -> msg) -> Maybe a -> List String -> Html.Html msg
+listboxWithMaybe msg selectedItem list =
     let
         selectedIdx =
             case selectedItem of
@@ -113,7 +117,7 @@ listboxWithMaybe selectedItem list =
                 Just val ->
                     ""
     in
-        Paper.listbox [ class "dropdown-content", selected selectedIdx ]
+        Paper.listbox [ class "dropdown-content", selected selectedIdx, onIronSelect msg ]
             (List.map listItem list)
 
 
@@ -121,7 +125,7 @@ view : Model -> Html.Html Msg
 view model =
     let
         countryDropdown =
-            Paper.dropdownMenu [ label "Country" ] [ listboxWithMaybe model.country countries ]
+            Paper.dropdownMenu [ label "Country" ] [ listboxWithMaybe Dbg model.country countries ]
 
         ( isCityDisabled, cities ) =
             case model.country of
@@ -132,7 +136,7 @@ view model =
                     ( False, citiesForCountry country )
 
         cityDropdown =
-            Paper.dropdownMenu [ label "City", disabled isCityDisabled ] [ listboxWithMaybe model.city cities ]
+            Paper.dropdownMenu [ label "City", disabled isCityDisabled ] [ listboxWithMaybe Dbg model.city cities ]
     in
         div []
-            [ countryDropdown, cityDropdown ]
+            [ countryDropdown, cityDropdown, listboxWithMaybe Dbg model.country countries ]
