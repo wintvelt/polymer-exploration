@@ -2,12 +2,13 @@ module Main exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (div, text)
-import Html.Attributes exposing (class, disabled)
+import Html.Attributes exposing (class, disabled, style)
+import Html.Events exposing (onClick)
 import Polymer.Paper as Paper
 import Polymer.Attributes exposing (label, selected)
-import Polymer.Events exposing (onIronSelect, onSelectedChanged, onTap, onValueChanged)
 
 
+--import Polymer.Events exposing (onIronSelect, onSelectedChanged, onTap, onValueChanged)
 -- WIRING
 
 
@@ -32,7 +33,7 @@ type alias Model =
 
 init : Model
 init =
-    { country = Just "Spain"
+    { country = Nothing
     , city = Nothing
     }
 
@@ -81,29 +82,25 @@ countries =
 type Msg
     = CountryPicked Country
     | CityPicked City
-    | Dbg String
 
 
 update : Msg -> Model -> Model
 update msg model =
-    case msg of
+    case (Debug.log "msg" msg) of
         CountryPicked country ->
             { model | country = Just country, city = Nothing }
 
         CityPicked city ->
             { model | city = Just city }
 
-        Dbg str ->
-            Debug.log str model
-
 
 
 -- VIEW
 
 
-listItem : String -> Html.Html msg
-listItem label =
-    Paper.item [] [ text label ]
+listItem : (String -> msg) -> String -> Html.Html msg
+listItem toMsg label =
+    Paper.item [ onClick (toMsg label) ] [ text label ]
 
 
 listboxWithMaybe : (String -> msg) -> Maybe String -> List String -> Html.Html msg
@@ -112,7 +109,7 @@ listboxWithMaybe toMsg selectedItem list =
         selectedIdx =
             case selectedItem of
                 Nothing ->
-                    ""
+                    "-1"
 
                 Just val ->
                     List.indexedMap (,) list
@@ -126,15 +123,15 @@ listboxWithMaybe toMsg selectedItem list =
                             -1
                         |> toString
     in
-        Paper.listbox [ class "dropdown-content", selected selectedIdx, onIronSelect toMsg ]
-            (List.map listItem list)
+        Paper.listbox [ class "dropdown-content", selected selectedIdx ]
+            (List.map (listItem toMsg) list)
 
 
 view : Model -> Html.Html Msg
 view model =
     let
         countryDropdown =
-            Paper.dropdownMenu [ label "Country" ] [ listboxWithMaybe Dbg model.country countries ]
+            Paper.dropdownMenu [ label "Country", style [ ( "margin", "8px" ) ] ] [ listboxWithMaybe CountryPicked model.country countries ]
 
         ( isCityDisabled, cities ) =
             case model.country of
@@ -145,7 +142,7 @@ view model =
                     ( False, citiesForCountry country )
 
         cityDropdown =
-            Paper.dropdownMenu [ label "City", disabled isCityDisabled ] [ listboxWithMaybe Dbg model.city cities ]
+            Paper.dropdownMenu [ label "City", disabled isCityDisabled, style [ ( "margin", "8px" ) ] ] [ listboxWithMaybe CityPicked model.city cities ]
     in
         div []
             [ countryDropdown, cityDropdown ]
