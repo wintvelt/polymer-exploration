@@ -106,7 +106,7 @@ listItem label =
     Paper.item [] [ text label ]
 
 
-listboxWithMaybe : (String -> msg) -> Maybe a -> List String -> Html.Html msg
+listboxWithMaybe : (String -> msg) -> Maybe String -> List String -> Html.Html msg
 listboxWithMaybe msg selectedItem list =
     let
         selectedIdx =
@@ -115,7 +115,16 @@ listboxWithMaybe msg selectedItem list =
                     ""
 
                 Just val ->
-                    ""
+                    List.indexedMap (,) list
+                        |> List.foldr
+                            (\( idx, elem ) acc ->
+                                if elem == val then
+                                    idx
+                                else
+                                    acc
+                            )
+                            -1
+                        |> toString
     in
         Paper.listbox [ class "dropdown-content", selected selectedIdx, onIronSelect msg ]
             (List.map listItem list)
@@ -139,4 +148,4 @@ view model =
             Paper.dropdownMenu [ label "City", disabled isCityDisabled ] [ listboxWithMaybe Dbg model.city cities ]
     in
         div []
-            [ countryDropdown, cityDropdown, listboxWithMaybe Dbg model.country countries ]
+            [ countryDropdown, cityDropdown ]
