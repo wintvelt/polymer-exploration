@@ -84,7 +84,18 @@ update : Msg -> Model -> Model
 update msg model =
     case (Debug.log "msg" msg) of
         CountryPicked country ->
-            { model | country = Just country, city = Nothing }
+            { model
+                | country = Just country
+                , city =
+                    model.country
+                        |> Maybe.andThen
+                            (\currentCountry ->
+                                if currentCountry == country then
+                                    model.city
+                                else
+                                    Nothing
+                            )
+            }
 
         CityPicked city ->
             { model | city = Just city }
