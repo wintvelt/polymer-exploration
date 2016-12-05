@@ -8,12 +8,12 @@ import Polymer.Attributes as PA
 
 
 listItem : (String -> msg) -> String -> Html.Html msg
-listItem toMsg label =
-    Paper.item [ onClick (toMsg label) ] [ text label ]
+listItem tagger label =
+    Paper.item [ onClick (tagger label) ] [ text label ]
 
 
 listboxWithMaybe : (String -> msg) -> Maybe String -> List String -> Html.Html msg
-listboxWithMaybe toMsg selectedItem list =
+listboxWithMaybe tagger selectedItem list =
     let
         selectedIdx =
             case selectedItem of
@@ -33,12 +33,12 @@ listboxWithMaybe toMsg selectedItem list =
                         |> toString
     in
         Paper.listbox [ class "dropdown-content", PA.selected selectedIdx ]
-            (List.map (listItem toMsg) list)
+            (List.map (listItem tagger) list)
 
 
 type alias DropdownConfig msg =
     { label : String
-    , toMsg : String -> msg
+    , tagger : String -> msg
     , selected : Maybe String
     , items : List String
     , disabled : Bool
@@ -49,4 +49,4 @@ dropdown : DropdownConfig msg -> Html.Html msg
 dropdown cfg =
     Paper.dropdownMenu
         [ PA.label cfg.label, style [ ( "margin", "8px" ) ], disabled cfg.disabled ]
-        [ listboxWithMaybe cfg.toMsg cfg.selected cfg.items ]
+        [ listboxWithMaybe cfg.tagger cfg.selected cfg.items ]

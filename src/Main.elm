@@ -100,7 +100,7 @@ view model =
     let
         countryCfg =
             { label = "Country"
-            , toMsg = CountryPicked
+            , tagger = CountryPicked
             , selected = model.country
             , items = countries
             , disabled = False
@@ -116,7 +116,7 @@ view model =
 
         cityCfg =
             { label = "City"
-            , toMsg = CityPicked
+            , tagger = CityPicked
             , selected = model.city
             , items = cities
             , disabled = isCityDisabled
