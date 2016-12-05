@@ -7,6 +7,9 @@ import Polymer.Paper as Paper
 import Polymer.Attributes as PA
 
 
+--import Polymer.Events exposing (onIronSelect, onSelectedChanged, onTap, onValueChanged)
+
+
 listItem : (String -> msg) -> String -> Html.Html msg
 listItem tagger label =
     Paper.item [ onClick (tagger label) ] [ text label ]

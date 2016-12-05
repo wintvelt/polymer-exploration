@@ -5,7 +5,6 @@ import Html exposing (div, text)
 import Dropdown exposing (dropdown)
 
 
---import Polymer.Events exposing (onIronSelect, onSelectedChanged, onTap, onValueChanged)
 -- WIRING
 
 
