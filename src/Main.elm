@@ -22,16 +22,46 @@ main =
 
 
 type alias Model =
-    { country : Maybe Country
-    , city : Maybe City
+    { destination : Maybe CitySelection
     }
 
 
 init : Model
 init =
-    { country = Nothing
-    , city = Nothing
+    { destination = Nothing
     }
+
+
+-- City selection to prevent impossible states :)
+
+type CitySelection =
+    CitySelection
+        { country : Country
+        , city : Maybe City
+        }
+    
+citySelect : City -> CitySelection -> CitySelection
+citySelect newCity (CitySelection { country, city }) =
+    CitySelection { country = country, city = Just newCity }
+  
+countrySelect : Country -> CitySelection -> CitySelection
+countrySelect newCountry (CitySelection { country, city } as old) =
+      if newCountry /= country then
+        CitySelection { country = newCountry, city = Nothing }
+      else 
+        old
+
+newSelect : Country -> CitySelection
+newSelect newCountry =
+    CitySelection { country = newCountry, city = Nothing }
+
+cityFrom : CitySelection -> Maybe City
+cityFrom (CitySelection { country, city }) =
+    city
+
+countryFrom : CitySelection -> Country
+countryFrom (CitySelection { country, city }) =
+    country
 
 
 
@@ -83,18 +113,21 @@ type Msg
 update : Msg -> Model -> Model
 update msg model =
     case (Debug.log "msg" msg) of
-        CountryPicked country ->
+        CountryPicked newCountry ->
             { model
-                | country = Just country
-                , city =
-                    if model.country == (Just country) then
-                        model.city
-                    else
-                        Nothing
+                | destination =
+                    model.destination
+                    |> Maybe.map (countrySelect newCountry)
+                    |> Maybe.withDefault (newSelect newCountry)
+                    |> Just
             }
 
-        CityPicked city ->
-            { model | city = Just city }
+        CityPicked newCity ->
+            { model
+                | destination =
+                    model.destination
+                    |> Maybe.map (citySelect newCity)
+            }
 
 
 
@@ -107,23 +140,27 @@ view model =
         countryCfg =
             { label = "Country"
             , tagger = CountryPicked
-            , selected = model.country
+            , selected =
+                model.destination
+                |> Maybe.map countryFrom
             , items = countries
             , disabled = False
             }
 
         ( isCityDisabled, cities ) =
-            case model.country of
+            case model.destination of
                 Nothing ->
                     ( True, [] )
 
-                Just country ->
-                    ( False, citiesForCountry country )
+                Just destination ->
+                    ( False, citiesForCountry <| countryFrom destination )
 
         cityCfg =
             { label = "City"
             , tagger = CityPicked
-            , selected = model.city
+            , selected = 
+                model.destination
+                |> Maybe.andThen cityFrom
             , items = cities
             , disabled = isCityDisabled
             }
