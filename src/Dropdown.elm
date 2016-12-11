@@ -35,7 +35,11 @@ listboxWithMaybe tagger selectedItem list =
                             -1
                         |> toString
     in
-        Paper.listbox [ class "dropdown-content", PA.selected selectedIdx ]
+        Paper.listbox 
+            [ class "dropdown-content"
+            , style [ ("width","200px") ] 
+            , PA.selected selectedIdx 
+            ]
             (List.map (listItem tagger) list)
 
 
