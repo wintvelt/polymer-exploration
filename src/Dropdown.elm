@@ -24,16 +24,15 @@ listboxWithMaybe tagger selectedItem list =
                     "-1"
 
                 Just val ->
-                    List.indexedMap (,) list
-                        |> List.foldr
-                            (\( idx, elem ) acc ->
-                                if elem == val then
-                                    idx
-                                else
-                                    acc
-                            )
-                            -1
-                        |> toString
+                    case 
+                        List.indexedMap (,) list
+                        |> List.filter (\(idx, elem) -> elem == val) of
+
+                            (i, el) :: xs ->
+                                toString i
+
+                            [] ->
+                                "-1"
     in
         Paper.listbox [ class "dropdown-content", PA.selected selectedIdx ]
             (List.map (listItem tagger) list)
